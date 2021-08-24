@@ -38,5 +38,38 @@ class Reminder(db.Model):
         self.month_id = month_id
 
 
+class MonthSchema(ma.Schema):
+    class Meta:
+        fields = ("id","name","year","start_day","days_in_month","days_in_previous_month")
+
+month_schema = MonthSchema()
+multi_month_schema = MonthSchema(many=True)
+
+class ReminderSchema(ma.Schema):
+    class Meta:
+        fields = ("id","text","date","month_id")
+
+reminder_schema = ReminderSchema()
+
+
+@app.route("/month/add", methods=["POST"])
+def add_month():
+    if request.content_type != "application/json":
+        return jsonify("Error: Data must be sent as json")
+
+    post_data = request.get_json()
+    name = post_data.get("name")
+    year = post_data.get("year")
+    start_day = post_data.get("start_day")
+    days_in_month = post_data.get("days_in_month")
+    days_in_previous_month = post_data.get("days_in_previous_month")
+
+    new_record = Month(name, year, start_day, days_in_month, days_in_previous_month)
+    db.session.add(new_record)
+    db.session.commit()
+
+    return jsonify(month_schema.dump(new_record))
+
+
 if __name__ == "__main__":
     app.run(debug=True)
