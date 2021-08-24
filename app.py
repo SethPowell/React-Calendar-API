@@ -92,10 +92,12 @@ def add_multiple_months():
         days_in_month = month.get("days_in_month")
         days_in_previous_month = month.get("days_in_previous_month")
 
-        new_record = Month(name, year, start_day, days_in_month, days_in_previous_month)
-        db.session.add(new_record)
-        db.session.commit()
-        new_records.append(new_record)
+        existing_month_check = db.session.query(Month).filter(Month.name == name).filter(Month.year == year).first()
+        if existing_month_check is None:
+            new_record = Month(name, year, start_day, days_in_month, days_in_previous_month)
+            db.session.add(new_record)
+            db.session.commit()
+            new_records.append(new_record)
 
     return jsonify(multiple_month_schema.dump(new_records))
 
