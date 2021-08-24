@@ -4,11 +4,38 @@ from flask_marshmallow import Marshmallow
 from flask_cors import CORS
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = ""
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://paorykqknvojvy:88910bd474e837439143a3a3a00ee20d6e80f0b07087ad519ee74261971aead0@ec2-44-197-40-76.compute-1.amazonaws.com:5432/d8sd2e8eb1iuj7"
 
 db= SQLAlchemy(app)
 ma = Marshmallow(app)
 CORS(app)
+
+
+class Month(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    year = db.Column(db.Integer, nullable=False)
+    start_day = db.Column(db.Integer, nullable=False)
+    days_in_month = db.Column(db.Integer, nullable=False)
+    days_in_previous_month = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, name, year, start_day, days_in_month, days_in_previous_month):
+        self.name = name
+        self.year = year
+        self.start_day = start_day
+        self.days_in_month = days_in_month
+        self.days_in_previous_month = days_in_previous_month
+
+class Reminder(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String, nullable=False)
+    date = db.Column(db.Integer, nullable=False)
+    month_id = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, text, date, month_id):
+        self.text = text
+        self.date = date
+        self.month_id = month_id
 
 
 if __name__ == "__main__":
