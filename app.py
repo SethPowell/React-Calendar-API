@@ -43,7 +43,7 @@ class MonthSchema(ma.Schema):
         fields = ("id","name","year","start_day","days_in_month","days_in_previous_month")
 
 month_schema = MonthSchema()
-multi_month_schema = MonthSchema(many=True)
+multiple_month_schema = MonthSchema(many=True)
 
 class ReminderSchema(ma.Schema):
     class Meta:
@@ -69,6 +69,31 @@ def add_month():
     db.session.commit()
 
     return jsonify(month_schema.dump(new_record))
+
+
+@app.route("/month/add/multiple", methods=["POST"])
+def add_multiple_months():
+    if request.content_type != "application/json":
+        return jsonify("Error: Data must be sent as json")
+    
+    post_data = request.get_json()
+    data = post_data.get("data")
+
+    new_records = []
+
+    for month in data:
+        name = month.get("name")
+        year = month.get("year")
+        start_day = month.get("start_day")
+        days_in_month = month.get("days_in_month")
+        days_in_previous_month = month.get("days_in_previous_month")
+
+        new_record = Month(name, year, start_day, days_in_month, days_in_previous_month)
+        db.session.add(new_record)
+        db.session.commit()
+        new_records.append(new_record)
+
+    return jsonify(multiple_month_schema.dump(new_records))
 
 
 if __name__ == "__main__":
