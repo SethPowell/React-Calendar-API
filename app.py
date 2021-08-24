@@ -64,6 +64,10 @@ def add_month():
     days_in_month = post_data.get("days_in_month")
     days_in_previous_month = post_data.get("days_in_previous_month")
 
+    existing_month_check = db.session.query(Month).filter(Month.name == name).filter(Month.year == year).first()
+    if existing_month_check is not None:
+        return jsonify("Error: A month of that name and year already exists")
+
     new_record = Month(name, year, start_day, days_in_month, days_in_previous_month)
     db.session.add(new_record)
     db.session.commit()
@@ -94,6 +98,12 @@ def add_multiple_months():
         new_records.append(new_record)
 
     return jsonify(multiple_month_schema.dump(new_records))
+
+@app.route("/month/get", methods=["GET"])
+def get_months():
+    all_months = db.session.query(Month).all()
+    return jsonify(multiple_month_schema.dump(all_months))
+
 
 
 if __name__ == "__main__":
