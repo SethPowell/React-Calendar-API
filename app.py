@@ -106,6 +106,25 @@ def get_months():
     all_months = db.session.query(Month).all()
     return jsonify(multiple_month_schema.dump(all_months))
 
+@app.route("/reminder/add", methods=["POST"])
+def add_multiple_months():
+    if request.content_type != "application/json":
+        return jsonify("Error: Data must be sent as json")
+
+    post_data = request.get_json()
+    text = post_data.get("text")
+    date = post_data.get("date")
+    month_id = post_data.get("month_id")
+
+    existing_reminder_check = db.session.query(Reminder).filter(Reminder.date == date).filter(Reminder.month_id == month_id).first()
+    if existing_reminder_check is not None: 
+        return jsonify("Error: You already have a reminder for this date")
+
+    new_record = Reminder(text, date, month_id)
+    db.session.add(new_record)
+    db.session.commit()
+
+    return jsonify(reminder_schema.dump(new_record))
 
 
 if __name__ == "__main__":
