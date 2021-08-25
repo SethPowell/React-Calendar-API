@@ -145,6 +145,18 @@ def get_reminder(month_id, date):
     reminder = db.session.query(Reminder).filter(Reminder.month_id == month_id).filter(Reminder.date == date).first()
     return jsonify(reminder_schema.dump(reminder))
 
+@app.route("/reminder/update/<month_id>/<date>", methods=["PUT"])
+def update_reminder(month_id, date):
+    if request.content_type != "application/json":
+        return jsonify("Error: Data must be sent as json")
+    
+    post_data = request.get_json()
+    text = post_data.get("text")
+
+    reminder = db.session.query(Reminder).filter(Reminder.month_id == month_id).filter(Reminder.date == date).first()
+
+    reminder.text = text
+    db.session.commit()
 
 if __name__ == "__main__":
     app.run(debug=True)
