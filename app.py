@@ -158,5 +158,7 @@ def update_reminder(month_id, date):
     reminder.text = text
     db.session.commit()
 
+    return jsonify(reminder_schema.dump(reminder))
+
 if __name__ == "__main__":
     app.run(debug=True)
