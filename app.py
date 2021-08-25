@@ -50,6 +50,7 @@ class ReminderSchema(ma.Schema):
         fields = ("id","text","date","month_id")
 
 reminder_schema = ReminderSchema()
+multiple_reminder_schema = ReminderSchema(many=True)
 
 
 @app.route("/month/add", methods=["POST"])
@@ -107,7 +108,7 @@ def get_months():
     return jsonify(multiple_month_schema.dump(all_months))
 
 @app.route("/reminder/add", methods=["POST"])
-def add_multiple_months():
+def add_reminder():
     if request.content_type != "application/json":
         return jsonify("Error: Data must be sent as json")
 
