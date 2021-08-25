@@ -132,13 +132,19 @@ def get_reminders():
     all_reminders = db.session.query(Reminder).all()
     return jsonify(multiple_reminder_schema.dump(all_reminders))
 
-@app.route("/reminder/get/<month_id>/<dates>", methods=["GET"])
+@app.route("/reminder/get/week/<month_id>/<dates>", methods=["GET"])
 def get_reminder_by_week(month_id, dates):
     all_reminders = []
-    for date in dates: 
+    for date in dates.split("-"): 
         reminder = db.session.query(Reminder).filter(Reminder.month_id == month_id).filter(Reminder.date == date).first()
         all_reminders.append(reminder)
     return jsonify(multiple_reminder_schema.dump(all_reminders))
+
+@app.route("/reminder/get/<month_id>/<date>", methods=["GET"])
+def get_reminder(month_id, date):
+    reminder = db.session.query(Reminder).filter(Reminder.month_id == month_id).filter(Reminder.date == date).first()
+    return jsonify(reminder_schema.dump(reminder))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
